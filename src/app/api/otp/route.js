@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import OTP from '@/models/OTP';
+import { sendEmail } from '@/utils/notifications';
 
 console.log("[API/OTP] Module loaded");
 
@@ -31,8 +32,20 @@ export async function POST(req) {
             // Create new OTP
             await OTP.create({ email, otp: generatedOtp });
 
-            // Send Email (Mock)
-            console.log(`[MOCK EMAIL SERVICE] Sending OTP ${generatedOtp} to ${email}`);
+            // Send actual email
+            const emailSubject = "Your BloodLink OTP Verification Code";
+            const emailHtml = `
+                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    <h2 style="color: #dc2626;">BloodLink Verification</h2>
+                    <p>Your OTP verification code is:</p>
+                    <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                        <h1 style="margin: 0; letter-spacing: 5px; color: #1f2937;">${generatedOtp}</h1>
+                    </div>
+                    <p style="color: #6b7280; font-size: 14px;">This code will expire in 10 minutes. If you did not request this, please ignore this email.</p>
+                </div>
+            `;
+
+            await sendEmail(email, emailSubject, emailHtml).catch(e => console.error("OTP Email Error:", e));
 
             return NextResponse.json({ message: 'OTP sent successfully' });
         }
