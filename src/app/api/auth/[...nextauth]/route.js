@@ -85,7 +85,7 @@ export const authOptions = {
     pages: {
         signIn: '/login',
     },
-    secret: process.env.NEXTAUTH_SECRET || (process.env.NODE_ENV === 'production' ? (() => { throw new Error("NEXTAUTH_SECRET is required in production"); })() : "bloodlink-secret-key-123"),
+    secret: process.env.NEXTAUTH_SECRET || "bloodlink-secret-key-123",
     debug: process.env.NODE_ENV !== 'production'
 };
 
