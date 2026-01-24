@@ -31,7 +31,9 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+.env.local
+bloodlink123-554e8-firebase-adminsdk-fbsvc-260a2c2bd1.json
+*.json
 
 # vercel
 .vercel
