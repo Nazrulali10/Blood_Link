@@ -24,26 +24,26 @@ export default function Footer() {
                         <h4 className="font-bold text-gray-900 mb-4">Platform</h4>
                         <ul className="space-y-2 text-sm text-gray-600">
                             <li><Link href="/" className="hover:text-[var(--primary)]">Home</Link></li>
-                            <li><Link href="/requests" className="hover:text-[var(--primary)]">Browse Requests</Link></li>
-                            <li><Link href="/donate" className="hover:text-[var(--primary)]">Donation Guide</Link></li>
+                            <li><Link href="/#requests" className="hover:text-[var(--primary)]">Browse Requests</Link></li>
+                            <li><Link href="/#requests" className="hover:text-[var(--primary)]">Donation Guide</Link></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="font-bold text-gray-900 mb-4">Community</h4>
                         <ul className="space-y-2 text-sm text-gray-600">
-                            <li><Link href="/stories" className="hover:text-[var(--primary)]">Success Stories</Link></li>
-                            <li><Link href="/top-donors" className="hover:text-[var(--primary)]">Top Donors</Link></li>
-                            <li><Link href="/blog" className="hover:text-[var(--primary)]">Blog</Link></li>
+                            <li><Link href="/#" className="hover:text-[var(--primary)]">Success Stories</Link></li>
+                            <li><Link href="/donors" className="hover:text-[var(--primary)]">Top Donors</Link></li>
+                            <li><Link href="/#" className="hover:text-[var(--primary)]">Blog</Link></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="font-bold text-gray-900 mb-4">Support</h4>
                         <ul className="space-y-2 text-sm text-gray-600">
-                            <li><Link href="/contact" className="hover:text-[var(--primary)]">Contact Us</Link></li>
-                            <li><Link href="/faq" className="hover:text-[var(--primary)]">FAQs</Link></li>
-                            <li><Link href="/privacy" className="hover:text-[var(--primary)]">Privacy Policy</Link></li>
+                            <li><Link href="/#" className="hover:text-[var(--primary)]">Contact Us</Link></li>
+                            <li><Link href="/#" className="hover:text-[var(--primary)]">FAQs</Link></li>
+                            <li><Link href="/#" className="hover:text-[var(--primary)]">Privacy Policy</Link></li>
                         </ul>
                     </div>
                 </div>
