@@ -52,7 +52,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col gap-12 pb-20 px-2 md:px-10">
+    <div className="flex flex-col gap-12 pb-20 px-0 md:px-10">
       <Hero />
 
       {/* AI Matching Feature Section */}
