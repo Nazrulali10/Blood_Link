@@ -36,13 +36,13 @@ export default function Hero() {
                     Live Blood Requests Available
                 </div>
 
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-[var(--foreground)] leading-tight mb-4">
+                <h1 className="text-3xl md:text-3xl lg:text-5xl font-black text-[var(--foreground)] leading-tight mb-4">
                     Connecting Blood Donors with <br className="hidden md:block" />
                     <span className="text-[var(--primary)]">Those in Need — Faster</span>
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-600 mb-6 max-w-2xl mx-auto leading-relaxed">
-                    Instant blood matching using real-time location and blood type.
+                    Instant blood matching using real-time location.
                     Every second counts when saving a life. Join our community today.
                 </p>
 
@@ -50,13 +50,13 @@ export default function Hero() {
                     <Link
                         href="/create-request"
                         onClick={(e) => handleProtectedClick(e, '/create-request')}
-                        className="w-full sm:w-auto px-8 py-3.5 bg-[var(--primary)] text-white rounded-[var(--radius)] font-bold text-lg hover:bg-red-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                        className="w-full sm:w-auto px-6 py-3 bg-[var(--primary)] text-white rounded-[var(--radius)] font-bold text-lg hover:bg-red-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                     >
                         Request Blood
                     </Link>
                     <Link
                         href="/become-donor"
-                        className="w-full sm:w-auto px-8 py-3.5 bg-white text-[var(--foreground)] border border-gray-200 rounded-[var(--radius)] font-bold text-lg hover:bg-gray-50 transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 group"
+                        className="w-full sm:w-auto px-6 py-3 bg-white text-[var(--foreground)] border border-gray-200 rounded-[var(--radius)] font-bold text-lg hover:bg-gray-50 transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 group"
                     >
                         <Heart className="w-5 h-5 text-[var(--primary)] group-hover:fill-[var(--primary)] transition-colors" />
                         Become a Donor

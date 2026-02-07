@@ -5,7 +5,7 @@ import { notFound, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { MapPin, Phone, Mail, Calendar, Droplet, CheckCircle, XCircle, ArrowLeft, Loader2, ShieldCheck, ShieldAlert } from 'lucide-react';
-import Footer from '@/components/Footer';
+
 
 export default function DonorProfilePage({ params }) {
     const { data: session } = useSession();
@@ -275,7 +275,7 @@ export default function DonorProfilePage({ params }) {
                 </div>
             </div>
 
-            <Footer />
+
         </main>
     );
 }

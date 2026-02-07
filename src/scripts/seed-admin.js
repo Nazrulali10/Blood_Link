@@ -23,22 +23,24 @@ async function seedAdmin() {
         console.log('Connected to MongoDB');
         console.log("Connected to DB:", mongoose.connection.name);
 
-        // Delete existing admins
-        await Admin.deleteMany({});
-        console.log('Cleared existing admins');
+        // Check if admin already exists
+        const existingAdmin = await Admin.findOne({ email: 'admin@bloodlink.com' });
+        if (existingAdmin) {
+            console.log('Admin already exists. Skipping creation.');
+        } else {
+            // Create new admin
+            const hashedPassword = await bcrypt.hash('admin123', 10);
+            await Admin.create({
+                name: 'Super Admin',
+                email: 'admin@bloodlink.com',
+                password: hashedPassword,
+                role: 'admin'
+            });
 
-        // Create new admin
-        const hashedPassword = await bcrypt.hash('admin123', 10);
-        const admin = await Admin.create({
-            name: 'Super Admin',
-            email: 'admin@bloodlink.com',
-            password: hashedPassword,
-            role: 'admin'
-        });
-
-        console.log('Admin created successfully:');
-        console.log('Email: admin@bloodlink.com');
-        console.log('Password: admin123');
+            console.log('Admin created successfully:');
+            console.log('Email: admin@bloodlink.com');
+            console.log('Password: admin123');
+        }
 
         await mongoose.disconnect();
     } catch (error) {

@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Hero from "@/components/Hero";
-import AIMatchingHero from "@/components/AIMatchingHero"; // Import new component
+import AIMatchingHero from "@/components/AIMatchingHero";
 import Filters from "@/components/Filters";
 import RequestCard from "@/components/RequestCard";
 import CreateRequestCard from "@/components/CreateRequestCard";
+import AIMatchingHeroD from "@/components/AIMatchingHeroD";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -51,11 +52,16 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col gap-12 pb-20">
+    <div className="flex flex-col gap-12 pb-20 px-10">
       <Hero />
 
       {/* AI Matching Feature Section */}
-      <AIMatchingHero />
+      <div className="md:hidden">
+        <AIMatchingHero />
+      </div>
+      <div className="hidden md:block px-12">
+        <AIMatchingHeroD />
+      </div>
 
       <section className="container mx-auto px-4" id="requests">
         <Filters selectedType={selectedType} onTypeChange={setSelectedType} />

@@ -151,10 +151,10 @@ export default function RequestDetails() {
                 </button>
 
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-8 border-b border-gray-100">
-                        <div className="flex justify-between items-start mb-6">
+                    <div className="p-4 md:p-8 border-b border-gray-100">
+                        <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-4">
                             <div>
-                                <h1 className="text-3xl font-bold text-gray-900 mb-2">{request.patientName}</h1>
+                                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{request.patientName}</h1>
                                 <a
                                     href={`https://www.google.com/maps/dir/?api=1&destination=${request.geolocation?.lat && request.geolocation?.lng
                                         ? `${request.geolocation.lat},${request.geolocation.lng}`
@@ -162,18 +162,18 @@ export default function RequestDetails() {
                                         }`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-gray-500 hover:text-[var(--primary)] hover:underline flex items-center gap-2 transition-colors cursor-pointer group"
+                                    className="text-gray-500 hover:text-[var(--primary)] hover:underline flex items-center gap-2 transition-colors cursor-pointer group text-sm md:text-base"
                                 >
                                     <MapPin className="w-4 h-4 group-hover:text-[var(--primary)] transition-colors" />
                                     {request.hospitalName}, {request.location}
                                 </a>
                             </div>
-                            <span className={cn("px-4 py-2 rounded-full text-sm font-bold border uppercase tracking-wider", urgencyColors[request.urgency])}>
+                            <span className={cn("px-4 py-2 rounded-full text-xs md:text-sm font-bold border uppercase tracking-wider self-start", urgencyColors[request.urgency])}>
                                 {request.urgency} Urgency
                             </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-6 mb-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-8">
                             <div className="p-4 bg-red-50 rounded-xl border border-red-100 flex items-center gap-4">
                                 <div className="h-12 w-12 rounded-lg bg-white flex items-center justify-center text-2xl font-black text-[var(--primary)] shadow-sm">
                                     {request.bloodType}
@@ -217,7 +217,7 @@ export default function RequestDetails() {
                         {request.notes && (
                             <div className="mt-8">
                                 <h3 className="font-bold text-gray-900 mb-2">Additional Notes</h3>
-                                <p className="text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl">
+                                <p className="text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl text-sm md:text-base">
                                     {request.notes}
                                 </p>
                             </div>
