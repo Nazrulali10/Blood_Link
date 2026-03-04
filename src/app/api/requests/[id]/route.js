@@ -21,12 +21,21 @@ export async function GET(req, { params }) {
         const requester = await Requester.findById(request.creatorId).select('name email phone profileImage');
 
         let donations = [];
-        // If current user is the requester, also return donations
-        if (session?.user?.id === request.creatorId.toString()) {
-            const Donation = mongoose.models.Donation || (await import('@/models/Donation')).default;
-            donations = await Donation.find({ requestId: id })
-                .populate('donorId', 'name bloodType phone profileImage isVerified')
-                .sort({ createdAt: -1 });
+        const Donation = mongoose.models.Donation || (await import('@/models/Donation')).default;
+
+        if (session?.user?.id) {
+            if (session.user.id === request.creatorId.toString()) {
+                // Requester sees all donations
+                donations = await Donation.find({ requestId: id })
+                    .populate('donorId', 'name bloodType phone profileImage isVerified')
+                    .sort({ createdAt: -1 });
+            } else {
+                // Potential donor sees only their own donation offer for this request
+                donations = await Donation.find({
+                    requestId: id,
+                    donorId: session.user.id
+                }).populate('donorId', 'name bloodType phone profileImage isVerified');
+            }
         }
 
         return NextResponse.json({ request, requester, donations }, { status: 200 });

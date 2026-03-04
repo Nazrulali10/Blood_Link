@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { ArrowLeft, MapPin, Clock, Droplet, User, Phone, CheckCircle, AlertTriangle, Check, X, Loader2, Sparkles } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Droplet, User, Phone, CheckCircle, AlertTriangle, Check, X, Loader2, Sparkles, Navigation } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import LiveMap from '@/components/LiveMap';
+import DonorTracker from '@/components/DonorTracker';
 
 export default function RequestDetails() {
     const { id } = useParams();
@@ -20,6 +22,8 @@ export default function RequestDetails() {
     const [currentUser, setCurrentUser] = useState(null);
     const [donationStatus, setDonationStatus] = useState(null); // 'idle', 'loading', 'success', 'error'
     const [donationError, setDonationError] = useState("");
+    const [showLiveMap, setShowLiveMap] = useState(false);
+    const [activeDonation, setActiveDonation] = useState(null);
 
     const fetchRequestDetails = async () => {
         try {
@@ -29,6 +33,12 @@ export default function RequestDetails() {
             setRequest(data.request);
             setRequester(data.requester);
             setInterests(data.donations || []);
+
+            // Identify active donation for tracking
+            const active = (data.donations || []).find(d =>
+                (d.status === 'accepted' || d.status === 'in-progress')
+            );
+            setActiveDonation(active);
 
             // Check if current user is compatible donor
             if (session?.user) {
@@ -225,6 +235,56 @@ export default function RequestDetails() {
                     </div>
 
                     <div className="p-8 bg-gray-50 border-t border-gray-100">
+                        {/* Live Tracking Information */}
+                        {activeDonation && (activeDonation.status === 'accepted' || activeDonation.status === 'in-progress') && (
+                            <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                {session?.user?.id === request.creatorId ? (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                                <Navigation className="w-5 h-5 text-blue-600" />
+                                                Live Donor Tracking
+                                            </h3>
+                                            <button
+                                                onClick={() => setShowLiveMap(!showLiveMap)}
+                                                className="text-sm font-semibold text-[var(--primary)] hover:underline"
+                                            >
+                                                {showLiveMap ? "Hide Map" : "Show Map"}
+                                            </button>
+                                        </div>
+
+                                        {showLiveMap ? (
+                                            <LiveMap
+                                                donationId={activeDonation._id}
+                                                destination={request.geolocation?.lat && request.geolocation?.lng ? [request.geolocation.lat, request.geolocation.lng] : null}
+                                                donorName={activeDonation.donorId?.name}
+                                            />
+                                        ) : (
+                                            <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 flex flex-col items-center text-center gap-4">
+                                                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm text-blue-600">
+                                                    <Navigation className="w-8 h-8 animate-pulse" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-gray-900">Donor is on their way!</p>
+                                                    <p className="text-sm text-gray-600">You can track their live location on the map.</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => setShowLiveMap(true)}
+                                                    className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-md"
+                                                >
+                                                    Track Live Now
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    (session?.user?.id === (activeDonation.donorId?._id || activeDonation.donorId)?.toString()) && (
+                                        <DonorTracker donationId={activeDonation._id} />
+                                    )
+                                )}
+                            </div>
+                        )}
+
                         {/* Requester View: Interests and Offers */}
                         {session?.user?.id === request.creatorId && interests.length > 0 && (
                             <div className="mb-8">

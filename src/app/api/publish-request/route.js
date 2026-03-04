@@ -56,13 +56,13 @@ export async function POST(req) {
         // --- AI MATCHING & NOTIFICATIONS ---
         try {
             const matches = await findMatchingDonors(newRequest);
-            if (matches.length > 0) {
-                console.log(`[API/PUBLISH-REQUEST] Processing ${matches.length} matches...`);
+            console.log(`[API/PUBLISH-REQUEST] AI matching found ${matches.length} matches.`);
 
+            if (matches.length > 0) {
                 const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
                 const emailSubject = `URGENT: ${newRequest.bloodType} Blood Needed Nearby!`;
 
-                // Update bestMatch for frontend
+                // The closest match is the first one since matches are sorted by distance
                 const topMatch = matches[0];
                 bestMatch = {
                     id: topMatch.donor._id,
@@ -75,18 +75,24 @@ export async function POST(req) {
                     profileImage: topMatch.donor.profileImage
                 };
 
+                console.log(`[API/PUBLISH-REQUEST] Best match identified: ${bestMatch.name} (${bestMatch.distance})`);
+
                 const pushTitle = `Urgent: ${newRequest.bloodType} Blood Needed!`;
                 const pushBody = `${newRequest.units} units required at ${newRequest.hospitalName}.`;
                 const pushTokens = [];
 
-                await Promise.all(matches.map(async (m) => {
+                // Notify ALL matches via email and collect FCM tokens
+                const notificationResults = await Promise.all(matches.map(async (m, index) => {
+                    let emailSent = false;
+                    let pushQueued = false;
+
                     // 1. Email
                     if (m.donor.email) {
                         const emailHtml = `
                             <div style="font-family: sans-serif; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
                                 <h2 style="color: #dc2626;">Urgent Blood Request</h2>
-                                <p>Hello,</p>
-                                <p>A patient nearby needs your help. You are identified as a potential match.</p>
+                                <p>Hello ${m.donor.name},</p>
+                                <p>A patient nearby needs your help. You are identified as a potential match (${m.distance !== Infinity ? m.distance.toFixed(1) + ' km away' : 'Nearby'}).</p>
                                 <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 10px 0;">
                                     <p style="margin: 5px 0;"><strong>Blood Type:</strong> ${newRequest.bloodType}</p>
                                     <p style="margin: 5px 0;"><strong>Units:</strong> ${newRequest.units}</p>
@@ -96,20 +102,35 @@ export async function POST(req) {
                                 <p>Login to BloodLink to respond.</p>
                             </div>
                         `;
-                        await sendEmail(m.donor.email, emailSubject, emailHtml).catch(e => console.error("Email fail:", e));
+                        emailSent = await sendEmail(m.donor.email, emailSubject, emailHtml).catch(e => {
+                            console.error(`[API/PUBLISH-REQUEST] Email failed for ${m.donor.email}:`, e);
+                            return false;
+                        });
                     }
-                    // 2. Push Token
+
+                    // 2. Push Token collector
                     if (m.donor.fcmToken) {
                         pushTokens.push(m.donor.fcmToken);
+                        pushQueued = true;
                     }
+
+                    return { email: m.donor.email, emailSent, pushQueued };
                 }));
 
+                console.log(`[API/PUBLISH-REQUEST] Notification summary:`, notificationResults);
+
                 if (pushTokens.length > 0) {
-                    await sendPushNotification(pushTokens, pushTitle, pushBody, { requestId: newRequest._id.toString() }).catch(e => console.error("Push fail:", e));
+                    console.log(`[API/PUBLISH-REQUEST] Sending push notifications to ${pushTokens.length} tokens...`);
+                    await sendPushNotification(pushTokens, pushTitle, pushBody, {
+                        requestId: newRequest._id.toString(),
+                        type: 'URGENT_REQUEST'
+                    }).catch(e => console.error("[API/PUBLISH-REQUEST] Push notification batch failed:", e));
                 }
+            } else {
+                console.log("[API/PUBLISH-REQUEST] No matching donors found within range.");
             }
         } catch (e) {
-            console.error("[API/PUBLISH-REQUEST] Matching/Notification failed:", e);
+            console.error("[API/PUBLISH-REQUEST] AI Matching or Notification workflow failed:", e);
         }
 
         return NextResponse.json({

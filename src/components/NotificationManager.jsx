@@ -24,60 +24,78 @@ export default function NotificationManager() {
     const [tokenSent, setTokenSent] = useState(false);
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && 'Notification' in window) {
-            const currentPermission = Notification.permission;
-            setPermission(currentPermission);
+        const checkPermission = async () => {
+            if (typeof window !== 'undefined' && 'Notification' in window) {
+                const currentPermission = Notification.permission;
+                setPermission(currentPermission);
 
-            // Auto-retrieve token if already granted
-            if (currentPermission === 'granted') {
-                retrieveToken();
+                if (currentPermission === 'granted') {
+                    await retrieveToken();
+                }
             }
-        }
-    }, [session]); // Retry if session loads later
+        };
+        checkPermission();
+    }, [session]);
 
     const retrieveToken = async () => {
         if (!session) return;
 
         try {
             if (!firebaseConfig.apiKey) {
-                console.error("Firebase config missing.");
+                console.error("[Notifications] Firebase config missing.");
                 return;
             }
 
-            const app = initializeApp(firebaseConfig);
+            const { isSupported } = await import('firebase/messaging');
+            const supported = await isSupported();
+            if (!supported) {
+                console.warn("[Notifications] Messaging is not supported in this browser.");
+                return;
+            }
+
+            const { getApps, getApp } = await import('firebase/app');
+            const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
             const messaging = getMessaging(app);
 
-            // Get Token
-            // VAPID key is optional if using default setup, but good to have if user provides it.
-            // For now we skip it if not provided.
+            const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
+            console.log(`[Notifications] Retrieving token with VAPID key: ${vapidKey ? 'PRESENT' : 'MISSING'}`);
+
             const currentToken = await getToken(messaging, {
-                vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
+                vapidKey: vapidKey || undefined
             });
 
             if (currentToken) {
-                console.log('FCM Token received:', currentToken);
+                console.log('[Notifications] FCM Token received:', currentToken);
                 await saveTokenToBackend(currentToken);
             } else {
-                console.log('No registration token available.');
+                console.log('[Notifications] No registration token available. Request permission to generate one.');
             }
         } catch (error) {
-            console.error('An error occurred while retrieving token. ', error);
+            console.error('[Notifications] Error retrieving token:', error);
         }
     }
 
     const requestPermission = async () => {
         if (!session) return;
 
+        if (typeof window === 'undefined' || !('Notification' in window)) {
+            console.error("[Notifications] This browser does not support desktop notification");
+            return;
+        }
+
         try {
-            console.log('Requesting notification permission...');
+            console.log('[Notifications] Requesting permission...');
             const permissionResult = await Notification.requestPermission();
             setPermission(permissionResult);
 
             if (permissionResult === 'granted') {
+                console.log('[Notifications] Permission granted.');
                 await retrieveToken();
+            } else {
+                console.warn('[Notifications] Permission not granted:', permissionResult);
             }
         } catch (error) {
-            console.error('Permission request failed', error);
+            console.error('[Notifications] Permission request failed:', error);
         }
     };
 
@@ -113,7 +131,7 @@ export default function NotificationManager() {
                 <div className="flex-1 text-center md:text-left">
                     <h4 className="text-lg font-bold text-gray-900">Enable Vital Alerts?</h4>
                     <p className="text-gray-600 text-sm mt-1">
-                        Don't miss urgent blood requests near you. Enable notifications to save lives in real-time.
+                        Don&apos;t miss urgent blood requests near you. Enable notifications to save lives in real-time.
                     </p>
                 </div>
                 <div className="flex gap-3 w-full md:w-auto">

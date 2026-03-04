@@ -16,7 +16,7 @@ export default function Footer() {
                     </Link>
                     <p className="text-gray-500 leading-relaxed max-w-md mx-auto">
                         Connecting donors with those in need. Fast, secure, and life-saving.
-                        Together we can make a difference in people's lives.
+                        Together we can make a difference in people&apos;s lives.
                     </p>
                 </div>
 
