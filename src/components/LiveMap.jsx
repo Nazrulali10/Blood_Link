@@ -149,12 +149,6 @@ export default function LiveMap({ donationId, destination, donorName }) {
                 <MapController donorPos={position} destPos={destination} />
             </MapContainer>
 
-            <div className="absolute top-4 right-4 z-[1000] bg-black/60 backdrop-blur-md p-3 rounded-lg text-[10px] text-white space-y-1">
-                <p className="font-bold border-b border-white/20 pb-1 mb-1">Debug Info</p>
-                <p>Dest: {destination ? `${destination[0].toFixed(4)}, ${destination[1].toFixed(4)}` : 'None'}</p>
-                <p>Donor: {position ? `${position[0].toFixed(4)}, ${position[1].toFixed(4)}` : 'Waiting...'}</p>
-            </div>
-
             <div className="absolute bottom-4 left-4 z-[1000] bg-white/90 backdrop-blur-md p-3 rounded-xl shadow-lg border border-gray-200 text-xs space-y-2">
                 <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-red-500"></span>

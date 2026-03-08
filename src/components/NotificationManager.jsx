@@ -57,11 +57,28 @@ export default function NotificationManager() {
             const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
             const messaging = getMessaging(app);
 
+            // Explicitly register the service worker for reliability in Next.js
+            console.log("[Notifications] Registering service worker...");
+            const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(err => {
+                console.error("[Notifications] Service Worker registration failed:", err);
+                throw new Error(`SW Registration Failed: ${err.message}`);
+            });
+
+            // Wait a moment for SW to be active
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
             const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
-            console.log(`[Notifications] Retrieving token with VAPID key: ${vapidKey ? 'PRESENT' : 'MISSING'}`);
+            console.log(`[Notifications] Step 2: Retrieving token with VAPID key...`);
 
             const currentToken = await getToken(messaging, {
+                serviceWorkerRegistration: registration,
                 vapidKey: vapidKey || undefined
+            }).catch(getTokenErr => {
+                console.error("[Notifications] getToken failed specifically:", getTokenErr);
+                if (getTokenErr.code === 'messaging/token-subscribe-failed') {
+                    throw new Error("Push service rejected registration. Ensure you aren't in Incognito mode.");
+                }
+                throw getTokenErr;
             });
 
             if (currentToken) {

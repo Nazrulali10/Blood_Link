@@ -3,12 +3,17 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { data: session } = useSession();
+    const pathname = usePathname();
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+    const isActive = (path) => pathname === path;
 
     return (
         <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
@@ -27,22 +32,49 @@ export default function Navbar() {
                 <div className="hidden md:flex items-center gap-8">
                     {session?.user?.role === 'admin' ? (
                         <>
-                            <Link href="/donors" className="text-sm font-medium text-gray-600 hover:text-[var(--primary)] transition-colors">
+                            <Link
+                                href="/donors"
+                                className={cn(
+                                    "text-sm font-medium transition-colors",
+                                    isActive('/donors') ? "text-red-600 font-bold" : "text-gray-600 hover:text-red-500"
+                                )}
+                            >
                                 Donors
                             </Link>
-                            <Link href="/profile" className="text-sm font-medium text-gray-600 hover:text-[var(--primary)] transition-colors">
+                            <Link
+                                href="/profile"
+                                className={cn(
+                                    "text-sm font-medium transition-colors",
+                                    isActive('/profile') ? "text-red-600 font-bold" : "text-gray-600 hover:text-red-500"
+                                )}
+                            >
                                 Profile
                             </Link>
                         </>
                     ) : (
                         <>
-                            <Link href="/" className="text-sm font-medium text-[var(--primary)]">
+                            <Link
+                                href="/"
+                                className={cn(
+                                    "text-sm font-medium transition-colors",
+                                    isActive('/') ? "text-red-600 font-bold" : "text-gray-600 hover:text-red-500"
+                                )}
+                            >
                                 Home
                             </Link>
-                            <Link href="/#requests" className="text-sm font-medium text-gray-600 hover:text-[var(--primary)] transition-colors">
+                            <Link
+                                href="/#requests"
+                                className="text-sm font-medium text-gray-600 hover:text-red-500 transition-colors"
+                            >
                                 Requests
                             </Link>
-                            <Link href="/donors" className="text-sm font-medium text-gray-600 hover:text-[var(--primary)] transition-colors">
+                            <Link
+                                href="/donors"
+                                className={cn(
+                                    "text-sm font-medium transition-colors",
+                                    isActive('/donors') ? "text-red-600 font-bold" : "text-gray-600 hover:text-red-500"
+                                )}
+                            >
                                 Donors
                             </Link>
                             <Link
@@ -54,7 +86,10 @@ export default function Navbar() {
                                         window.location.href = "/login";
                                     }
                                 }}
-                                className="text-sm font-medium text-gray-600 hover:text-[var(--primary)] transition-colors"
+                                className={cn(
+                                    "text-sm font-medium transition-colors",
+                                    isActive('/profile') ? "text-red-600 font-bold" : "text-gray-600 hover:text-red-500"
+                                )}
                             >
                                 Profile
                             </Link>
@@ -120,14 +155,20 @@ export default function Navbar() {
                             <>
                                 <Link
                                     href="/donors"
-                                    className="text-sm font-medium text-gray-600 hover:text-[var(--primary)] py-2 border-b border-gray-50"
+                                    className={cn(
+                                        "text-sm font-medium py-3 border-b border-gray-50 flex items-center transition-colors px-2 rounded-lg",
+                                        isActive('/donors') ? "text-red-600 bg-red-50 font-bold" : "text-gray-600"
+                                    )}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Donors
                                 </Link>
                                 <Link
                                     href="/profile"
-                                    className="text-sm font-medium text-gray-600 hover:text-[var(--primary)] py-2 border-b border-gray-50"
+                                    className={cn(
+                                        "text-sm font-medium py-3 border-b border-gray-50 flex items-center transition-colors px-2 rounded-lg",
+                                        isActive('/profile') ? "text-red-600 bg-red-50 font-bold" : "text-gray-600"
+                                    )}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Profile
@@ -137,21 +178,27 @@ export default function Navbar() {
                             <>
                                 <Link
                                     href="/"
-                                    className="text-sm font-medium text-[var(--primary)] py-2 border-b border-gray-50"
+                                    className={cn(
+                                        "text-sm font-medium py-3 border-b border-gray-50 flex items-center transition-colors px-2 rounded-lg",
+                                        isActive('/') ? "text-red-600 bg-red-50 font-bold" : "text-gray-600"
+                                    )}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Home
                                 </Link>
                                 <Link
                                     href="/#requests"
-                                    className="text-sm font-medium text-gray-600 hover:text-[var(--primary)] py-2 border-b border-gray-50"
+                                    className="text-sm font-medium text-gray-600 py-3 border-b border-gray-50 flex items-center px-2 rounded-lg"
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Requests
                                 </Link>
                                 <Link
                                     href="/donors"
-                                    className="text-sm font-medium text-gray-600 hover:text-[var(--primary)] py-2 border-b border-gray-50"
+                                    className={cn(
+                                        "text-sm font-medium py-3 border-b border-gray-50 flex items-center transition-colors px-2 rounded-lg",
+                                        isActive('/donors') ? "text-red-600 bg-red-50 font-bold" : "text-gray-600"
+                                    )}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Donors
@@ -168,7 +215,10 @@ export default function Navbar() {
                                             setIsMenuOpen(false);
                                         }
                                     }}
-                                    className="text-sm font-medium text-gray-600 hover:text-[var(--primary)] py-2 border-b border-gray-50"
+                                    className={cn(
+                                        "text-sm font-medium py-3 border-b border-gray-50 flex items-center transition-colors px-2 rounded-lg",
+                                        isActive('/profile') ? "text-red-600 bg-red-50 font-bold" : "text-gray-600"
+                                    )}
                                 >
                                     Profile
                                 </Link>
