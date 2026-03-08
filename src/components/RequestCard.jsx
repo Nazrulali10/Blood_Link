@@ -7,20 +7,6 @@ import { useState, useEffect } from 'react';
 export default function RequestCard({ request }) {
     const { data: session } = useSession();
     const router = useRouter();
-    const [userRole, setUserRole] = useState(null);
-
-    useEffect(() => {
-        if (session?.user?.id) {
-            const fetchRole = async () => {
-                const res = await fetch('/api/user/me');
-                if (res.ok) {
-                    const data = await res.json();
-                    setUserRole(data.role);
-                }
-            };
-            fetchRole();
-        }
-    }, [session]);
 
     const urgencyColors = {
         High: "bg-red-50 text-red-600 border-red-100",
@@ -35,7 +21,7 @@ export default function RequestCard({ request }) {
             return;
         }
 
-        if (userRole !== 'donor') {
+        if (session?.user?.role !== 'donor') {
             alert("You must be registered as a donor to donate. Please update your profile or register as a donor.");
             return;
         }

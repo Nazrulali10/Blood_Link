@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { MapPin, User, Phone, CheckCircle, Clock, AlertTriangle, FileText, Heart, X, Check, Pencil, Camera, Mail, Calendar, Droplet, Award, ChevronDown, Loader2, XCircle } from 'lucide-react';
+import { MapPin, User, Phone, CheckCircle, Clock, AlertTriangle, FileText, Heart, X, Check, Pencil, Camera, Mail, Calendar, Droplet, Award, ChevronDown, Loader2, XCircle, Bell, Trash2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -21,7 +21,7 @@ export default function Profile() {
 
     useEffect(() => {
         if (status === 'unauthenticated') {
-            // Let the UI handle the redirect message
+            setLoading(false);
         } else if (status === 'authenticated') {
             fetchUserData();
         }
@@ -112,6 +112,29 @@ export default function Profile() {
             console.error("Error updating photo:", err);
         } finally {
             setUpdatingPhoto(false);
+        }
+    };
+
+    const handleDeleteRequest = async (requestId) => {
+        if (!window.confirm("Are you sure you want to delete this blood request? This action cannot be undone.")) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/requests/${requestId}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                setMyRequests(prev => prev.filter(req => req._id !== requestId));
+                alert("Request deleted successfully");
+            } else {
+                const data = await res.json();
+                alert(data.error || "Failed to delete request");
+            }
+        } catch (err) {
+            console.error("Error deleting request:", err);
+            alert("An error occurred while deleting the request");
         }
     };
 
@@ -285,15 +308,26 @@ export default function Profile() {
                                         <h2 className="font-bold text-xl mb-4">Your Blood Requests</h2>
                                         <div className="space-y-4">
                                             {myRequests.map(req => (
-                                                <div key={req._id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                                    <div>
-                                                        <p className="font-bold">{req.patientName}</p>
+                                                <div key={req._id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg group">
+                                                    <div className="flex-1">
+                                                        <Link href={`/requests/${req._id}`} className="font-bold hover:text-red-600 transition-colors uppercase">
+                                                            {req.patientName}
+                                                        </Link>
                                                         <p className="text-xs text-gray-500">{new Date(req.createdAt).toLocaleDateString()}</p>
                                                     </div>
-                                                    <span className={cn("text-xs font-bold px-2 py-1 rounded-full border",
-                                                        req.status === 'fulfilled' ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700")}>
-                                                        {req.status}
-                                                    </span>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className={cn("text-xs font-bold px-2 py-1 rounded-full border",
+                                                            req.status === 'fulfilled' ? "bg-green-100 text-green-700 border-green-200" : "bg-yellow-100 text-yellow-700 border-yellow-200")}>
+                                                            {req.status}
+                                                        </span>
+                                                        <button
+                                                            onClick={() => handleDeleteRequest(req._id)}
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all opacity-0 group-hover:opacity-100 lg:opacity-100"
+                                                            title="Delete Request"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>

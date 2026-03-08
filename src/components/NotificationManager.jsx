@@ -64,28 +64,41 @@ export default function NotificationManager() {
                 throw new Error(`SW Registration Failed: ${err.message}`);
             });
 
-            // Wait a moment for SW to be active
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // CRITICAL: Wait for the service worker to be active
+            let retryCount = 0;
+            while (!registration.active && retryCount < 10) {
+                console.log("[Notifications] SW is not yet active, waiting... (Attempt " + (retryCount + 1) + ")");
+                await new Promise(resolve => setTimeout(resolve, 500));
+                retryCount++;
+            }
+
+            if (!registration.active) {
+                throw new Error("Service Worker failed to activate in time.");
+            }
 
             const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
-            console.log(`[Notifications] Step 2: Retrieving token with VAPID key...`);
+            console.log(`[Notifications] Step 2: Retrieving token with VAPID key (${vapidKey ? 'Length: ' + vapidKey.length : 'MISSING'})...`);
 
-            const currentToken = await getToken(messaging, {
-                serviceWorkerRegistration: registration,
-                vapidKey: vapidKey || undefined
-            }).catch(getTokenErr => {
-                console.error("[Notifications] getToken failed specifically:", getTokenErr);
-                if (getTokenErr.code === 'messaging/token-subscribe-failed') {
-                    throw new Error("Push service rejected registration. Ensure you aren't in Incognito mode.");
+            let currentToken;
+            try {
+                currentToken = await getToken(messaging, {
+                    serviceWorkerRegistration: registration,
+                    vapidKey: vapidKey || undefined
+                });
+            } catch (firstTryErr) {
+                console.warn("[Notifications] First getToken attempt failed, trying fallback...", firstTryErr);
+                if (firstTryErr.name === 'AbortError') {
+                    console.log("[Notifications] Detected AbortError: Registration failed. This often means the browser (like Brave) is blocking push notifications globally in settings.");
                 }
-                throw getTokenErr;
-            });
+                // Fallback: try without explicit registration object
+                currentToken = await getToken(messaging, { vapidKey: vapidKey || undefined });
+            }
 
             if (currentToken) {
-                console.log('[Notifications] FCM Token received:', currentToken);
+                console.log('[Notifications] FCM Token received successfully!');
                 await saveTokenToBackend(currentToken);
             } else {
-                console.log('[Notifications] No registration token available. Request permission to generate one.');
+                console.log('[Notifications] No registration token available.');
             }
         } catch (error) {
             console.error('[Notifications] Error retrieving token:', error);

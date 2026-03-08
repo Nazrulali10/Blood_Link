@@ -36,7 +36,7 @@ export default function Navbar() {
                                 href="/donors"
                                 className={cn(
                                     "text-sm font-medium transition-colors",
-                                    isActive('/donors') ? "text-red-600 font-bold" : "text-gray-600 hover:text-red-500"
+                                    isActive('/donors') ? "text-red-600" : "text-gray-600 hover:text-red-500"
                                 )}
                             >
                                 Donors
@@ -45,7 +45,7 @@ export default function Navbar() {
                                 href="/profile"
                                 className={cn(
                                     "text-sm font-medium transition-colors",
-                                    isActive('/profile') ? "text-red-600 font-bold" : "text-gray-600 hover:text-red-500"
+                                    isActive('/profile') ? "text-red-600" : "text-gray-600 hover:text-red-500"
                                 )}
                             >
                                 Profile
@@ -57,7 +57,7 @@ export default function Navbar() {
                                 href="/"
                                 className={cn(
                                     "text-sm font-medium transition-colors",
-                                    isActive('/') ? "text-red-600 font-bold" : "text-gray-600 hover:text-red-500"
+                                    isActive('/') ? "text-red-600" : "text-gray-600 hover:text-red-500"
                                 )}
                             >
                                 Home
@@ -72,7 +72,7 @@ export default function Navbar() {
                                 href="/donors"
                                 className={cn(
                                     "text-sm font-medium transition-colors",
-                                    isActive('/donors') ? "text-red-600 font-bold" : "text-gray-600 hover:text-red-500"
+                                    isActive('/donors') ? "text-red-600" : "text-gray-600 hover:text-red-500"
                                 )}
                             >
                                 Donors
@@ -88,7 +88,7 @@ export default function Navbar() {
                                 }}
                                 className={cn(
                                     "text-sm font-medium transition-colors",
-                                    isActive('/profile') ? "text-red-600 font-bold" : "text-gray-600 hover:text-red-500"
+                                    isActive('/profile') ? "text-red-600" : "text-gray-600 hover:text-red-500"
                                 )}
                             >
                                 Profile
@@ -157,7 +157,7 @@ export default function Navbar() {
                                     href="/donors"
                                     className={cn(
                                         "text-sm font-medium py-3 border-b border-gray-50 flex items-center transition-colors px-2 rounded-lg",
-                                        isActive('/donors') ? "text-red-600 bg-red-50 font-bold" : "text-gray-600"
+                                        isActive('/donors') ? "text-red-600 bg-red-50" : "text-gray-600"
                                     )}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
@@ -167,7 +167,7 @@ export default function Navbar() {
                                     href="/profile"
                                     className={cn(
                                         "text-sm font-medium py-3 border-b border-gray-50 flex items-center transition-colors px-2 rounded-lg",
-                                        isActive('/profile') ? "text-red-600 bg-red-50 font-bold" : "text-gray-600"
+                                        isActive('/profile') ? "text-red-600 bg-red-50" : "text-gray-600"
                                     )}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
@@ -180,7 +180,7 @@ export default function Navbar() {
                                     href="/"
                                     className={cn(
                                         "text-sm font-medium py-3 border-b border-gray-50 flex items-center transition-colors px-2 rounded-lg",
-                                        isActive('/') ? "text-red-600 bg-red-50 font-bold" : "text-gray-600"
+                                        isActive('/') ? "text-red-600 bg-red-50" : "text-gray-600"
                                     )}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
@@ -197,7 +197,7 @@ export default function Navbar() {
                                     href="/donors"
                                     className={cn(
                                         "text-sm font-medium py-3 border-b border-gray-50 flex items-center transition-colors px-2 rounded-lg",
-                                        isActive('/donors') ? "text-red-600 bg-red-50 font-bold" : "text-gray-600"
+                                        isActive('/donors') ? "text-red-600 bg-red-50" : "text-gray-600"
                                     )}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
@@ -217,7 +217,7 @@ export default function Navbar() {
                                     }}
                                     className={cn(
                                         "text-sm font-medium py-3 border-b border-gray-50 flex items-center transition-colors px-2 rounded-lg",
-                                        isActive('/profile') ? "text-red-600 bg-red-50 font-bold" : "text-gray-600"
+                                        isActive('/profile') ? "text-red-600 bg-red-50" : "text-gray-600"
                                     )}
                                 >
                                     Profile

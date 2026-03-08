@@ -44,3 +44,33 @@ export async function GET(req, { params }) {
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
+
+export async function DELETE(req, { params }) {
+    try {
+        await dbConnect();
+        const { id } = await params;
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const request = await Request.findById(id);
+
+        if (!request) {
+            return NextResponse.json({ error: 'Request not found' }, { status: 404 });
+        }
+
+        // Only the creator can delete the request
+        if (request.creatorId.toString() !== session.user.id) {
+            return NextResponse.json({ error: 'Unauthorized to delete this request' }, { status: 403 });
+        }
+
+        await Request.findByIdAndDelete(id);
+
+        return NextResponse.json({ message: 'Request deleted successfully' }, { status: 200 });
+    } catch (error) {
+        console.error('Error deleting request:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}

@@ -4,9 +4,15 @@ import admin from 'firebase-admin';
 // Initialize Firebase Admin (Singleton)
 if (!admin.apps.length) {
     try {
-        const privateKey = process.env.FIREBASE_PRIVATE_KEY
-            ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
-            : undefined;
+        let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+        if (privateKey) {
+            // Remove surrounding quotes if they exist (common in .env.local)
+            if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+                privateKey = privateKey.substring(1, privateKey.length - 1);
+            }
+            privateKey = privateKey.replace(/\\n/g, '\n');
+        }
 
         if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && privateKey) {
             admin.initializeApp({
@@ -16,9 +22,13 @@ if (!admin.apps.length) {
                     privateKey: privateKey,
                 }),
             });
-            console.log("[Notifications] Firebase Admin initialized successfully.");
+            console.log("[Notifications] Firebase Admin initialized successfully for project:", process.env.FIREBASE_PROJECT_ID);
         } else {
-            console.warn("[Notifications] Firebase credentials missing. Push notifications will be skipped.");
+            const missing = [];
+            if (!process.env.FIREBASE_PROJECT_ID) missing.push("PROJECT_ID");
+            if (!process.env.FIREBASE_CLIENT_EMAIL) missing.push("CLIENT_EMAIL");
+            if (!privateKey) missing.push("PRIVATE_KEY");
+            console.warn("[Notifications] Firebase credentials missing (" + missing.join(", ") + "). Push notifications will be skipped.");
         }
     } catch (error) {
         console.error("[Notifications] Error initializing Firebase Admin:", error);
@@ -80,7 +90,7 @@ export async function sendPushNotification(tokens, title, body, data = {}) {
             tokens: validTokens,
         };
 
-        const response = await admin.messaging().sendMulticast(message);
+        const response = await admin.messaging().sendEachForMulticast(message);
         console.log(`[Notifications] Push sent. Success: ${response.successCount}, Failure: ${response.failureCount}`);
 
         if (response.failureCount > 0) {
@@ -95,7 +105,14 @@ export async function sendPushNotification(tokens, title, body, data = {}) {
 
         return response;
     } catch (error) {
-        console.error("[Notifications] Error sending push notification:", error);
-        return null;
+        console.error("[Notifications] Critical error in sendPushNotification:", error);
+        return {
+            successCount: 0,
+            failureCount: tokens.length,
+            responses: tokens.map(() => ({
+                success: false,
+                error: { message: error.message || "Unknown internal error", code: error.code }
+            }))
+        };
     }
 }

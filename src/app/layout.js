@@ -11,6 +11,7 @@ export const metadata = {
   title: "BloodLink - Connect, Donate, Save Lives",
   description: "Instant blood matching platform connecting donors with those in need. Save lives today by joining our community.",
   metadataBase: new URL('http://localhost:3000'), // Replace with actual URL in production
+  manifest: '/manifest.json',
   openGraph: {
     title: "BloodLink | Save Lives, Donate Blood",
     description: "Connect with donors instantly and save lives. The fastest way to match blood requirements with active donors.",
