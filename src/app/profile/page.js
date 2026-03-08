@@ -322,7 +322,7 @@ export default function Profile() {
                                                         </span>
                                                         <button
                                                             onClick={() => handleDeleteRequest(req._id)}
-                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all opacity-0 group-hover:opacity-100 lg:opacity-100"
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                                                             title="Delete Request"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
